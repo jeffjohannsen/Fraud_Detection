@@ -98,12 +98,25 @@ def drop_unused_features(data):
     return data
 
 
+def load_data_fd(filename):
+    """
+    Loads fraud detection data from specifies file.
+
+    Args:
+        filename (string): Data filename without .json
+
+    Returns:
+        tuple of dataframes: original_data and copy of original data
+    """
+    filepath = f"../data/{filename}.json"
+    original_data = pd.read_json(filepath, orient="records", lines=True)
+    data = original_data.copy()
+    return original_data, data
+
+
 if __name__ == "__main__":
     # Load in working data
-    original_data = pd.read_json(
-        "../data/working_data.json", orient="records", lines=True
-    )
-    data = original_data.copy()
+    data = load_data_fd("working_data")[1]
 
     # Clean data
     data = create_target(data)
