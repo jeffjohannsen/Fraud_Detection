@@ -50,6 +50,7 @@ def fill_missing_values(df):
         "description",
         "name",
         "org_desc",
+        "org_name",
         "payout_type",
         "venue_country",
         "venue_name",

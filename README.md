@@ -3,15 +3,15 @@
 </p>
 
 # Fraud Detection Project
-*by Devon Silk, Jeff Johannsen, Jess Curley, Pedro Meyer*
+*by Jeff Johannsen, Devon Silk, Jess Curley, Pedro Meyer*
 
-Fraud is a major concern for any company. We set out to find patterns on event purchases to develop a method to accurately spot fraud. At the end of this project, this project aims to be presented on a simple application software.
+Fraud is a major concern for any company. The goal of this project is to create a system monitors transactions to accurately detect fraudulent event purchases. The results of this detection system will be presented in an interactive manner that makes it easy for the end user to recognize and deal with the potentially fraudulent transactions.
 
 # Exploring the Data
 
-The data given by the company was reasonably complete, although complex. This data contained a mix of categorical and numerical data in varied formats including html, datetime objects, lists of dictionaries, and normal text and numerical values.
+The data provided by the company was reasonably complete, although complex. This data contained a mix of categorical and numerical data in varied formats including html, datetime objects, lists of dictionaries, along with normal text and numerical values.
 
-The first step on our exploration was to split the data into fraudulent and not fraudulent transactions. The acct_type feature provided was condensed to give us a fraudulent record count of 1033 and a non-fraudulent record count of 10436.
+The first step on our exploration was to split the data into fraudulent and not fraudulent transactions. The acct_type feature provided was condensed to give us a fraudulent record count of 1033 and a non-fraudulent record count of 10436 in our training data.
 
 ### Original Data
 
@@ -31,118 +31,42 @@ The data cleaning process consisted of three main steps.
     * Convert yes/no (y/n) strings to boolean values (1, 0)
 2. Deal With Nan/Null Values
     This was a little more complicated than I thought at first glance. I tried to keep as much of the data as possible so I replace nulls with either -1 or Unknown. There was a lot of features that had empty strings which aren't immediately recognized as nan/null values. I located these and replace them with 'Unknown'.
-3. Remove Unnecessary of Unusable Features
+3. Remove Unnecessary or Unusable Features
     * Some features provided no value or overlapped with other features.
     * Some features caused data leakage for the modeling process.
+
+# Data Analysis
+
+Exploration of the data showed that multiple features showed a correlation with fraudulent events.
+
+## User Age
+
+## Country
 
 # Feature Engineering
 
 This step consisted of 3 main parts:
 1. Featurize non-numerical and categorical features to make them easier to model.
     * Aggregate features created from list and dict type features.
+
+## Number of Previous Payouts
+
 2. Create composite features that are more informative than the originals.
     * 
+
+## Number of Blank Fields
+
 3. Dig into text data using NLP tools.
-    * 
 
-These are two of the many features we compared:
+## NLP Feature Engineering
 
-![userage](images/user_agecomparisson.png)
-<br>
-![eventend](images/event_endcomparisson.png)
+## Word Clouds for Fraud vs. Non-Fraud
 
-After going through this process with the other features, we created a dataframe of all the features we wanted to use, however, not all data types in this table could be used for our prediction model. Therefore, we had more cleanup to do.
+## Similarity Scores
 
-We created a new column that correlates 'fraud values' to 1 and 'not fraud' values to 0.
+## Model Predictions
 
-We then turned all of our non-numerical values into numbers (featurized) so our prediction model can use them. 
+## Metric Selection
 
-For the "Event Description", we cleaned up the *html* format to get the text and found the most used words to get a sense for what kinds of events we were working with:
-
- |   | Top 10 Not Fraud Words|
-----------|---------
-  0 | {'getaway, charleston, winthrop, br, dinner, noon, winter, metro, waiver, strong'}                        |\n|  
-  1 | {'developmental, desired, 2010, profile, results, 11pt, span, strong, li, training'}                      |\n|  
-  2 | {'repeat, background, irishtabletennis, template, interface, sport, li, bullet, url, gif'}                |\n|  
-  3 | {'silman, contracts, filmmakers, press, film, james, writers, rights, lawyer, morrow'}                    |\n|  
-  4 | {'razorsharks, bluegrass, stallions, rochester, league, basketball, premier, come, join, donderdagavond'} |
-<br>
-<br>
-
- |  | Top 10 Fraud Words|
- ---:|:------------------
-2 | {'party, gras, mardi, line, wear, dancing, shoes, paparazzi, umbrella, gold'}                  |\n|  
-3 | {'span, exhibition, underline, london, decoration, properties, abroad, buying, text, style'}   |\n|  
-4 | {'zumba, electric, eastside, easy, economy, education, effective, electrcity, electrically, ease'}|\n|  
-5 | {'site, mowbray, melton, thrussington, service, food, strong, units, miles, surrounding'}       |\n|  
-6 | {'213, dial, 226, 465905, et, 0400, scheduled, today, 30pm, number'}                           |\n|  
-7 | {'atlanta, width, img, height, alt, nomarrow, stay, online, bone, marrow'}
-<br>
-
-Some of the _html_ functions leaked to our final result, however, those were mostly dealt with on our next step: the featurization process.
-
-<br>
-<br>
-
-## Featurizing Categorical Data
-The next step was to use a Naive Bayes Model to predict the probability of each transaction to be fraudulent or not. Those probabilities then were used as a feature for our final model.
-
-For example, what is the probability of an event being fraud based on the above event descriptions?
-
-![notproba](./images/notfraudproba.png)
-
-This distribution raised a red flag: How come our model is predicting data disproportionately as "Not Fraud" than "Fraud"? 
-
-The main possible reason is class imbalance, which we calculated to be around 95% of the data being "Not Fraud". In hindsight, this could be fixed with Cross Validation. To handle class imbalance, we used SMOTE to balance our training data that was input into the random forest (discussed later).
-
-## Feature Engineering
-<img src="https://github.com/JCurley10/fraud-detection-case-study/blob/jess/images/Screen%20Shot%202020-12-18%20at%202.58.57%20PM.png" width="500" height="250">
-
-A few things came to mind when considering our own experiences with fraud or fraudulent behavior:
-- Time between when the user created the account and when they created the event
-- Time between when the user created an event and when the event started
-- How many previous payouts did the creater have
-- The average ticket cost
-- The range of ticket prices
-
-## Final Features: Predicting Fraud
-
-After we finilized our final feature matrix, this is what we ended up with:
-
-
-|    |   Event Created|   Event Start |   Time Between User Created and Event Created |   Time Between Create and Start Date |   Number of Previous Payouts |   User Age |   User Created (Date) |   Average Ticket Cost |   Ticket Cost Range |
-|---:|----------------:|--------------:|------------------------------------:|------------------------:|------------------:|-----------:|---------------:|-----------:|-------------:|
-|  0 |     1.26274e+09 |   1.26559e+09 |                         3.12576e+06 |             2.85469e+06 |                 0 |         36 |    1.25961e+09 |     208.33 |          525 |
-|  1 |     1.29383e+09 |   1.29626e+09 |                         1.28899e+07 |             2.42293e+06 |                49 |        149 |    1.28094e+09 |      35    |            0 |
-<br>
-
-From here, we calculated the importance of each feature:
-
-<br>
-
-![importance](images/feature_importances.png)
-
-<br>
-
-![permutation](images/permutation_importances.png)
-
-<br>
-Based on those feature importances, we ran those into a Random Forest Model to then predict if an event had fraud or not. This is how our model did:
-<br>
-
-![modelresult](images/model_results.png)
 The metrics we care about are recall and F1 score. A better recall score  minimizes false negatives, which means we minimize how often we predict it isn’t fraud when it is. The F1 is a combination of recall and precision, since we do also care about not having too many false positives, which could lower user confidence in this event platform.
 
-<br>
-
-## Predicting on Streaming Data 
-
-Drumroll for our fancy fraud detection app being tested in 3...2...1.... 
-
-This is just a proof of concept for now. We did not successfully reach the stage of running this over a flask app. We do have a baseline set up, but it is not connected to this model. 
-
-## Conclusion and Future Work
-
-Since we ultimately did not incorporate text data in our model, we want add our vectorized text as features in our model to test against the other important features. The next goal would be to run the vectorized text data through a Naive Bayes model, and use the predicted probability as new features in the dataset that is run through random forest model.
-The final model was very successful in determining fraud. However, it was too successful. That leaves open oportunities for future fine tuning of our models and data.
-Further testing for class imbalances and more a/b testing with different features could give us better results. 
