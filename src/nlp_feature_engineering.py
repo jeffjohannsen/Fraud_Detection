@@ -1,7 +1,7 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import SGDClassifier
@@ -49,10 +49,10 @@ if __name__ == "__main__":
     text_df = separate_text_features_target(df)
     html_features = ["description", "org_desc"]
     text_df = convert_html_to_text(text_df, html_features=html_features)
-    print(text_df.head())
+    # print(text_df.head())
 
     X_train, X_test, y_train, y_test = train_test_split(
-        text_df["name"],
+        text_df["description"],
         text_df["is_fraud"],
         test_size=0.25,
         random_state=10,
@@ -60,9 +60,15 @@ if __name__ == "__main__":
 
     text_clf_pipeline = Pipeline(
         [
-            ("vect", CountVectorizer(ngram_range=(1, 2), stop_words=None)),
+            (
+                "vect",
+                CountVectorizer(ngram_range=(1, 2), stop_words="english"),
+            ),
             ("tfidf", TfidfTransformer()),
-            ("clf", SGDClassifier(class_weight="balanced")),
+            (
+                "clf",
+                SGDClassifier(loss="modified_huber", max_iter=10000),
+            ),
         ]
     )
 
