@@ -1,4 +1,5 @@
 import pandas as pd
+from bs4 import BeautifulSoup
 
 
 def load_fraud_data(filename):
@@ -191,6 +192,25 @@ def remove_features(df):
     return df
 
 
+def convert_html_to_text(df, html_features):
+    """
+    Converts html features to plain text.
+
+    Args:
+        df (dataframe)
+        html_features (list of strings): Names of html features.
+
+    Returns:
+        dataframe
+    """
+    for feature in html_features:
+        df[feature] = df[feature].apply(
+            lambda x: BeautifulSoup(x, "html.parser")
+        )
+        df[feature] = df[feature].apply(lambda x: x.get_text("|", strip=True))
+    return df
+
+
 def run_data_prep_pipeline(original_df):
     """
     Runs all steps in the data cleaning, data preparation,
@@ -211,6 +231,7 @@ def run_data_prep_pipeline(original_df):
     df = aggregate_nested_features(df)
     df = convert_categorical_features(df)
     df["total_empty_values"] = df.applymap(lambda x: x in [0, -1]).sum(axis=1)
+    df = convert_html_to_text(df, ["description", "org_desc"])
     df = remove_features(df)
     return df
 

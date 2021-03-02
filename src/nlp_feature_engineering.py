@@ -1,5 +1,5 @@
 import pandas as pd
-from bs4 import BeautifulSoup
+import pickle as pkl
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -24,40 +24,56 @@ def separate_text_features_target(df):
     return df_text
 
 
-def convert_html_to_text(df, html_features):
+def quick_model_metrics(fitted_model, X_train, y_train, X_test, y_test):
     """
-    Converts html features to plain text.
+    Model accuracy vs baseline (majority class - Not Fraud)
+    for training and testing datasets.
 
     Args:
-        df (dataframe)
-        html_features (list of strings): Names of html features.
-
-    Returns:
-        dataframe
+        fitted_model (object)
+        X_train (dataframe)
+        y_train (dataframe)
+        X_test (series)
+        y_test (series)
     """
-    for feature in html_features:
-        df[feature] = df[feature].apply(
-            lambda x: BeautifulSoup(x, "html.parser")
-        )
-        df[feature] = df[feature].apply(lambda x: x.get_text("|", strip=True))
-    return df
+    train_baseline = y_train[y_train == "Not Fraud"].size / y_train.size
+    test_baseline = y_test[y_test == "Not Fraud"].size / y_test.size
+    train_accuracy = fitted_model.score(X_train, y_train)
+    test_accuracy = fitted_model.score(X_test, y_test)
+    print(f"Train Baseline: {train_baseline:.4f}")
+    print(f"Train Accuracy: {train_accuracy:.4f}")
+    print(f"Test Baseline: {test_baseline:.4f}")
+    print(f"Test Accuracy: {test_accuracy:.4f}")
+
+
+def save_fitted_model(model, filename):
+    """
+    Save fitted model to models folder in pickle format.
+
+    Args:
+        model (object): Fitted model
+        filename (string): Model name
+    """
+    filepath = f"../models/{filename}.pkl"
+    with open(filepath, "wb") as file:
+        pkl.dump(model, file)
+    print("Model saved successfully.")
 
 
 if __name__ == "__main__":
-
+    # Loading in data
     df = load_fraud_data("model_data_v1")
     text_df = separate_text_features_target(df)
-    html_features = ["description", "org_desc"]
-    text_df = convert_html_to_text(text_df, html_features=html_features)
-    # print(text_df.head())
-
+    # Choose text feature to process
+    current_feature = "org_name"
+    # Make train and test sets
     X_train, X_test, y_train, y_test = train_test_split(
-        text_df["description"],
+        text_df[current_feature],
         text_df["is_fraud"],
         test_size=0.25,
         random_state=10,
     )
-
+    # Create text processing system
     text_clf_pipeline = Pipeline(
         [
             (
@@ -71,17 +87,17 @@ if __name__ == "__main__":
             ),
         ]
     )
-
+    # Train text processing system
     text_clf_pipeline.fit(X_train, y_train)
-
-    train_baseline = y_train[y_train == "Not Fraud"].size / y_train.size
-    test_baseline = y_test[y_test == "Not Fraud"].size / y_test.size
-
-    train_accuracy = text_clf_pipeline.score(X_train, y_train)
-    test_accuracy = text_clf_pipeline.score(X_test, y_test)
-
-    print(f"Train Baseline: {train_baseline:.4f}")
-    print(f"Train Accuracy: {train_accuracy:.4f}")
-
-    print(f"Test Baseline: {test_baseline:.4f}")
-    print(f"Test Accuracy: {test_accuracy:.4f}")
+    # Check performance of text processing system
+    quick_model_metrics(
+        text_clf_pipeline,
+        X_train=X_train,
+        y_train=y_train,
+        X_test=X_test,
+        y_test=y_test,
+    )
+    # Save model for predictions to be done later
+    # save_fitted_model(
+    #     text_clf_pipeline, f"nlp_{current_feature}_text_clf_pipeline"
+    # )
