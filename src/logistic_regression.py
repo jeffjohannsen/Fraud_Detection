@@ -1,3 +1,4 @@
+import eli5
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.api.types import is_numeric_dtype
@@ -13,6 +14,7 @@ from sklearn.metrics import (
 )
 
 from a1_Data_Prep_Pipeline import load_fraud_data
+from nlp_feature_engineering import quick_model_metrics
 
 
 def setup_data(
@@ -78,21 +80,70 @@ def create_pipeline(
     return clf_pipeline
 
 
-def plot_results(fitted_clf, X, y):
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
-    plot_roc_curve(fitted_clf, X, y, pos_label="Fraud", ax=ax1)
-    plot_precision_recall_curve(fitted_clf, X, y, pos_label="Fraud", ax=ax2)
-    plot_confusion_matrix(fitted_clf, X, y, ax=ax3)
-    plt.tight_layout()
-    plt.show()
-
-
 if __name__ == "__main__":
     # Load Data
-    data = load_fraud_data("model_data_v1")
+    data = load_fraud_data("model_data_v2")
     # Select features to use for modeling.
     all_possible_features = [
         "approx_payout_date",
+        "body_length",
+        "channels",
+        "country",
+        "currency",
+        "delivery_method",
+        "description",
+        "email_domain",
+        "event_created",
+        "event_end",
+        "event_published",
+        "event_start",
+        "fb_published",
+        "gts",
+        "has_analytics",
+        "has_header",
+        "has_logo",
+        "listed",
+        "name",
+        "name_length",
+        "num_order",
+        "num_payouts",
+        "object_id",
+        "org_desc",
+        "org_facebook",
+        "org_name",
+        "org_twitter",
+        "payee_name",
+        "payout_type",
+        "sale_duration",
+        "sale_duration2",
+        "show_map",
+        "user_age",
+        "user_created",
+        "user_type",
+        "venue_address",
+        "venue_country",
+        "venue_latitude",
+        "venue_longitude",
+        "venue_name",
+        "venue_state",
+        "is_fraud",
+        "num_previous_payouts",
+        "previous_payouts_total",
+        "num_ticket_types",
+        "num_tickets_available",
+        "total_ticket_value",
+        "avg_ticket_cost",
+        "known_payee_name",
+        "known_venue_name",
+        "known_payout_type",
+        "total_empty_values",
+        "name_proba",
+        "description_proba",
+        "org_name_proba",
+        "org_desc_proba",
+    ]
+    top_features = []
+    features_to_test = [
         "body_length",
         "channels",
         "delivery_method",
@@ -105,14 +156,13 @@ if __name__ == "__main__":
         "name_length",
         "num_order",
         "num_payouts",
-        "object_id",
         "org_facebook",
         "org_twitter",
+        "user_type",
         "sale_duration",
         "sale_duration2",
         "show_map",
         "user_age",
-        "user_type",
         "venue_latitude",
         "venue_longitude",
         "num_previous_payouts",
@@ -125,11 +175,13 @@ if __name__ == "__main__":
         "known_venue_name",
         "known_payout_type",
         "total_empty_values",
+        "name_proba",
+        "description_proba",
+        "org_name_proba",
+        "org_desc_proba",
     ]
-
-    top_features = []
     # Create training and test datasets.
-    X_train, X_test, y_train, y_test = setup_data(data, all_possible_features)
+    X_train, X_test, y_train, y_test = setup_data(data, features_to_test)
 
     log_reg_best_params = dict(
         penalty="l2",
@@ -179,16 +231,10 @@ if __name__ == "__main__":
     # print(grid_search_cv_pipeline.best_estimator_)
     # print(grid_search_cv_pipeline.best_score_)
 
-    train_baseline = y_train[y_train == "Not Fraud"].size / y_train.size
-    test_baseline = y_test[y_test == "Not Fraud"].size / y_test.size
-
-    train_accuracy = clf_pipeline.score(X_train, y_train)
-    test_accuracy = clf_pipeline.score(X_test, y_test)
-
-    print(f"Train Baseline: {train_baseline:.4f}")
-    print(f"Train Accuracy: {train_accuracy:.4f}")
-
-    print(f"Test Baseline: {test_baseline:.4f}")
-    print(f"Test Accuracy: {test_accuracy:.4f}")
-
-    plot_results(clf_pipeline, X_test, y_test)
+    quick_model_metrics(
+        clf_pipeline,
+        X_train=X_train,
+        y_train=y_train,
+        X_test=X_test,
+        y_test=y_test,
+    )

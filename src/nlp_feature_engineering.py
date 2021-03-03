@@ -1,11 +1,15 @@
 import pandas as pd
+import numpy as np
 import pickle as pkl
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import SGDClassifier
-from a1_Data_Prep_Pipeline import load_fraud_data
+
+from a1_Data_Prep_Pipeline import load_fraud_data, save_df_to_json
+
+pd.set_option("display.max_columns", 100)
 
 
 def separate_text_features_target(df):
@@ -60,12 +64,45 @@ def save_fitted_model(model, filename):
     print("Model saved successfully.")
 
 
+def convert_text_to_predict_proba(df, features_to_convert):
+    """
+    Runs a saved model pipeline on text features.
+    Adds prediction probability feature to dataframe
+    for each text feature.
+
+    Args:
+        df (dataframe)
+        features_to_convert (list of strings)
+
+    Returns:
+        dataframe
+    """
+    modeled_features = ["name", "description", "org_name", "org_desc"]
+    for feature in features_to_convert:
+        if feature in modeled_features:
+            model = None
+            with open(
+                f"../models/nlp_{feature}_text_clf_pipeline.pkl", "rb"
+            ) as f:
+                model = pkl.load(f)
+
+            fraud_index = int(np.argwhere(model.classes_ == "Fraud"))
+            predictions = model.predict_proba(df[feature])[:, 0]
+            df[f"{feature}_proba"] = predictions
+        else:
+            print(f"Error: {feature} is not available to be converted.")
+            print("Current possible features include: ")
+            print(modeled_features)
+    return df
+
+
 if __name__ == "__main__":
     # Loading in data
     df = load_fraud_data("model_data_v1")
+
     text_df = separate_text_features_target(df)
     # Choose text feature to process
-    current_feature = "org_name"
+    current_feature = "description"
     # Make train and test sets
     X_train, X_test, y_train, y_test = train_test_split(
         text_df[current_feature],
@@ -97,7 +134,13 @@ if __name__ == "__main__":
         X_test=X_test,
         y_test=y_test,
     )
-    # Save model for predictions to be done later
+    # # Save model for predictions to be done later
     # save_fitted_model(
     #     text_clf_pipeline, f"nlp_{current_feature}_text_clf_pipeline"
     # )
+
+    # # Load model and predict. Adding predictions to new dataset.
+    # df = convert_text_to_predict_proba(
+    #     df, ["name", "description", "org_name", "org_desc"]
+    # )
+    # save_df_to_json(df, "model_data_v2")
