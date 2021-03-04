@@ -87,13 +87,58 @@ def convert_text_to_predict_proba(df, features_to_convert):
                 model = pkl.load(f)
 
             fraud_index = int(np.argwhere(model.classes_ == "Fraud"))
-            predictions = model.predict_proba(df[feature])[:, 0]
+            predictions = model.predict_proba(df[feature])[:, fraud_index]
             df[f"{feature}_proba"] = predictions
         else:
             print(f"Error: {feature} is not available to be converted.")
             print("Current possible features include: ")
             print(modeled_features)
     return df
+
+
+def text_to_predict_proba(X_train, y_train, X_test, features_to_convert):
+    """
+    Converts text features to predict_proba of fraud.
+    Trains the model each time to specific inputted
+    train test split to avoid any possible data leakage.
+    Time consuming at scale.
+
+    Args:
+        X_train (dataframe)
+        y_train (series)
+        X_test (dataframe)
+        features_to_convert (list of strings):
+            List of text feature names to model
+            and convert to probability of fraud.
+
+    Returns:
+        tuple of dataframes: X_train, X_test
+    """
+    train = X_train
+    test = X_test
+    for feature in features_to_convert:
+        text_clf_pipeline = Pipeline(
+            [
+                (
+                    "vect",
+                    CountVectorizer(ngram_range=(1, 2), stop_words="english"),
+                ),
+                ("tfidf", TfidfTransformer()),
+                (
+                    "clf",
+                    SGDClassifier(loss="modified_huber", max_iter=10000),
+                ),
+            ]
+        )
+        text_clf_pipeline.fit(train[feature], y_train)
+        fraud_index = int(np.argwhere(text_clf_pipeline.classes_ == "Fraud"))
+        for dataset in [train, test]:
+            predictions = text_clf_pipeline.predict_proba(dataset[feature])[
+                :, fraud_index
+            ]
+            dataset[f"{feature}_proba"] = predictions
+            dataset.drop(columns=feature, inplace=True)
+    return train, test
 
 
 if __name__ == "__main__":

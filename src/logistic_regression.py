@@ -1,4 +1,3 @@
-import eli5
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.api.types import is_numeric_dtype
