@@ -5,7 +5,7 @@
 # Fraud Detection Project
 *by Jeff Johannsen, Devon Silk, Jess Curley, Pedro Meyer*
 
-Fraud is a major concern for any company. The goal of this project is to create a system monitors transactions to accurately detect fraudulent event purchases. The results of this detection system will be presented in an interactive manner that makes it easy for the end user to recognize and deal with the potentially fraudulent transactions.
+Fraud is a major concern for any company. The goal of this project is to create a system that monitors event transactions to accurately detect fraudulent events and present the results of the fraud predictions in a easy to use user interface.
 
 # Exploring the Data
 
@@ -23,50 +23,77 @@ The first step on our exploration was to split the data into fraudulent and not 
 |  3 | premium     |           1362142800 |          4417 |         11 | IE        | EUR        |                 0 | <p><strong>&nbsp;... | gmail.com         |      1360608512 |  1361710800 |       1.36061e+09 |    1361680200 |              0 | 1813.36 |               0 |          nan |          1 | n        | King of Ping         |            12 |          51 |             1 |     5481976 | <p>Mabos is a mul... |             27 | mabos                |            11 |              | ACH           | [{'name': '', 'cr... |              12 |               12 |          1 | [{'event_id': 548... |         50 |     1356308239 |           3 | 8 Hanover Quay       | IE              |          53.3438 |          -6.23214 | mabos                | County Dublin |
 |  4 | premium     |           1358746200 |          2505 |          8 | US        | USD        |                 1 | <p style="text-al... | gmail.com         |      1353197931 |  1358314200 |       1.35339e+09 |    1358308800 |              0 |  105.44 |               0 |            0 |          1 | y        | Everyone Communic... |            50 |           1 |             1 |     4851467 | <p><span style="f... |             14 | Kim D. Moore - Co... |            10 | Kim D. Moore | CHECK         | [{'name': 'Kim D.... |              57 |               59 |          0 | [{'event_id': 485... |       1029 |     1264268063 |           4 |                      | None            |         nan      |         nan       | None                 | None          |
 
-# Data Cleaning
+# Data Processing
 
-The data cleaning process consisted of three main steps.
+![Data Cleaning Steps](images/data_cleaning_steps.png)
+
+The data cleaning process consisted of five main steps:
 1. Convert Datatypes
     * Convert unix timestamps to datetime objects
     * Convert yes/no (y/n) strings to boolean values (1, 0)
 2. Deal With Nan/Null Values
-    This was a little more complicated than I thought at first glance. I tried to keep as much of the data as possible so I replace nulls with either -1 or Unknown. There was a lot of features that had empty strings which aren't immediately recognized as nan/null values. I located these and replace them with 'Unknown'.
+    * This was a little more complicated than I thought at first glance. I tried to keep as much of the data as possible so I replaced nulls with either -1 or Unknown.
+    * There was a lot of features that had empty strings which aren't immediately recognized as nan/null values. I located these and replace them with 'Unknown'.
+    * The amount of nan/null values was a solid predictor of fraud so it was a good thing not to simply drop any data with nan/nulls.
 3. Remove Unnecessary or Unusable Features
     * Some features provided no value or overlapped with other features.
     * Some features caused data leakage for the modeling process.
+4. Condense and aggregate nested features (list of previous payouts and dicts of ticket information).
+5. Convert html features into plain text using the Beautiful Soup library.
 
 # Data Analysis
 
-Exploration of the data showed that multiple features showed a correlation with fraudulent events.
+## Number of Missing Values
 
-## User Age
+Exploration of the data showed that multiple features had different common values for fraudulent events than non-fraudulent events. One interesting marker of a fraudulent events is that the user that created the event provided less information about it. As you can see below fraudulent events are more likely to have more missing information.
 
-## Country
+![Number of Missing Values](images/total_empty_values_comparison.png)
 
-# Feature Engineering
+# NLP Feature Engineering
 
-This step consisted of 3 main parts:
-1. Featurize non-numerical and categorical features to make them easier to model.
-    * Aggregate features created from list and dict type features.
+![NLP Steps](images/nlp_steps.png)
 
-## Number of Previous Payouts
+A few of the original data features consisted of text that needed to be explored and processed into a usable format for modeling. These text features contained some of the most useful information so I utilized some NLP modeling techniques to turn the raw text into probabilities of an event being fraudulent or not. These probabilities are then combined with the other data features for use in the main machine learning model. 
 
-2. Create composite features that are more informative than the originals.
-    * 
+Four text features were utilized:
+1. Event Name
+2. Event Description
+3. Organization Name
+4. Organization Description
+As you can see from the below examples, there are some interesting differences between which words appear in fraudulent events compared to non-fraudulent events.
 
-## Number of Blank Fields
+### Event Name
 
-3. Dig into text data using NLP tools.
+![Event Name Wordclouds](images/name_wordclouds.png)
 
-## NLP Feature Engineering
+### Event Description
 
-## Word Clouds for Fraud vs. Non-Fraud
+![Event Description Wordclouds](images/description_wordclouds.png)
 
-## Similarity Scores
+# Modeling
 
-## Model Predictions
+## Model Setup
 
-## Metric Selection
+In order to ensure that the modeling process provided accurate and relavent results the following model preparation steps were crucial to the process.
 
-The metrics we care about are recall and F1 score. A better recall score  minimizes false negatives, which means we minimize how often we predict it isn’t fraud when it is. The F1 is a combination of recall and precision, since we do also care about not having too many false positives, which could lower user confidence in this event platform.
+### Metric Selection
+
+The current estimate is that only 10% of events are fraudulent. This creates a situation where it is fairly easy to get a high accuracy (>90%) but this does not necessarily mean that the system is successful. The main goal is to detect as many of the fraudulent events (true positives) as possible. With this in mind, recall is the metric that will be the main focus, though other metrics (Accuracy, Precision, F1-Score) will not be completely ignored. 
+
+### Data Integrity
+
+Multiple steps were taken to ensure that there is no data leakage throughout the system. A cross validation system was used for model tuning with the main working dataset. A separate dataset was used for testing. A third holdout dataset is also available for further testing to ensure data integrity. Each of these datasets were created using random sampling from the original data before any processing was completed.
+
+### Model Tuning
+
+A grid search cross validation process was used to locate the optimal hyperparameters for each of the model types.
+
+## Model Selection, Results, and Important Features
+
+Multiple models were tested to determine which provided the best predictions 
+
+### Logistic Regression
+
+
+
 
