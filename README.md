@@ -1,19 +1,28 @@
-<p align="center">
-<img src="https://images-na.ssl-images-amazon.com/images/I/51ZrPDH14vL._AC_.jpg">
-</p>
+![Header Image - Fraud](images/fraud_header.png)
 
-# Fraud Detection Project
-*by Jeff Johannsen, Devon Silk, Jess Curley, Pedro Meyer*
+# Fraud Detection
+
+## Table of Contents
+* [Introduction](#Introduction)
+* [The Dataset](#The-Dataset)
+* [Data Processing](#Data-Processing)
+* [Data Analysis (EDA)](#Data-Analysis-(EDA))
+* [NLP Feature Engineering](#NLP-Feature-Engineering)
+* [Machine Learning](#Machine-Learning)
+    * [Model Setup](#Model-Setup)
+    * [Model Selection and Results](#Model-Selection-and-Results)
+
+# Introduction
 
 Fraud is a major concern for any company. The goal of this project is to create a system that monitors event transactions to accurately detect fraudulent events and present the results of the fraud predictions in a easy to use user interface.
 
-# Exploring the Data
+# The Dataset
 
 The data provided by the company was reasonably complete, although complex. This data contained a mix of categorical and numerical data in varied formats including html, datetime objects, lists of dictionaries, along with normal text and numerical values.
 
 The first step on our exploration was to split the data into fraudulent and not fraudulent transactions. The acct_type feature provided was condensed to give us a fraudulent record count of 1033 and a non-fraudulent record count of 10436 in our training data.
 
-### Original Data
+### Original Dataset for Training Models
 
 |    | acct_type   |   approx_payout_date |   body_length |   channels | country   | currency   |   delivery_method | description          | email_domain      |   event_created |   event_end |   event_published |   event_start |   fb_published |     gts |   has_analytics |   has_header |   has_logo | listed   | name                 |   name_length |   num_order |   num_payouts |   object_id | org_desc             |   org_facebook | org_name             |   org_twitter | payee_name   | payout_type   | previous_payouts     |   sale_duration |   sale_duration2 |   show_map | ticket_types         |   user_age |   user_created |   user_type | venue_address        | venue_country   |   venue_latitude |   venue_longitude | venue_name           | venue_state   |
 |---:|:------------|---------------------:|--------------:|-----------:|:----------|:-----------|------------------:|:---------------------|:------------------|----------------:|------------:|------------------:|--------------:|---------------:|--------:|----------------:|-------------:|-----------:|:---------|:---------------------|--------------:|------------:|--------------:|------------:|:---------------------|---------------:|:---------------------|--------------:|:-------------|:--------------|:---------------------|----------------:|-----------------:|-----------:|:---------------------|-----------:|---------------:|------------:|:---------------------|:----------------|-----------------:|------------------:|:---------------------|:--------------|
@@ -41,7 +50,7 @@ The data cleaning process consisted of five main steps:
 4. Condense and aggregate nested features (list of previous payouts and dicts of ticket information).
 5. Convert html features into plain text using the Beautiful Soup library.
 
-# Data Analysis
+# Data Analysis (EDA)
 
 ## Number of Missing Values
 
@@ -70,7 +79,7 @@ As you can see from the below examples, there are some interesting differences b
 
 ![Event Description Wordclouds](images/description_wordclouds.png)
 
-# Modeling
+# Machine Learning
 
 ## Model Setup
 
@@ -88,12 +97,19 @@ Multiple steps were taken to ensure that there is no data leakage throughout the
 
 A grid search cross validation process was used to locate the optimal hyperparameters for each of the model types.
 
-## Model Selection, Results, and Important Features
+## Model Selection and Results
 
-Multiple models were tested to determine which provided the best predictions 
+Multiple models were tested to determine which provided the best predictions.
+While multiple metrics can be useful, in this case the focus will be on two central metrics.
+1. **Overall Model Accuracy** - Percentage of predictions that the model got correct. Baseline is 90%.
+2. **Fraud Specific Recall** - Percentage of fraudulent events that the model identified as fraud. Baseline is 0%.
+The Baseline is created from predicting the majority class (non-fraudulent) for each event. 
 
 ### Logistic Regression
 
+**Overall Model Accuracy: 95%**  
+**Fraud Specific Recall: 52%**
 
+![Logistic Regression Metrics](images/log_reg_metrics.png)
 
 
