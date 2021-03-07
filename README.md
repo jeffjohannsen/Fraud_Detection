@@ -4,7 +4,6 @@
 
 ## Table of Contents
 * [Introduction](#Introduction)
-* [The Dataset](#The-Dataset)
 * [Data Processing](#Data-Processing)
 * [Data Analysis (EDA)](#Data-Analysis-(EDA))
 * [NLP Feature Engineering](#NLP-Feature-Engineering)
@@ -16,7 +15,7 @@
 
 Fraud is a major concern for any company. The goal of this project is to create a system that monitors event transactions to accurately detect fraudulent events and present the results of the fraud predictions in a easy to use user interface.
 
-# The Dataset
+## The Dataset
 
 The data provided by the company was reasonably complete, although complex. This data contained a mix of categorical and numerical data in varied formats including html, datetime objects, lists of dictionaries, along with normal text and numerical values.
 
