@@ -101,4 +101,15 @@ The Baseline is created from predicting the majority class (non-fraudulent) for 
 
 ![Logistic Regression Metrics](images/log_reg_metrics.png)
 
+### Random Forest Classifier
 
+**Overall Model Accuracy: 96%**  
+**Fraud Specific Recall: 59%**
+
+![Logistic Regression Metrics](images/forest_metrics.png)
+
+## Model Comparisons
+
+Below is a comparison of the best results for the tested models.
+
+![Model Comparison Curves](images/model_comparison_curves.png)
