@@ -11,6 +11,8 @@
     * [Model Setup](#Model-Setup)
     * [Model Selection and Results](#Model-Selection-and-Results)
 
+<br/>
+
 # Introduction
 
 Fraud is a major concern for any company. The goal of this project is to create a system that monitors event transactions to accurately detect fraudulent events and present the results of the fraud predictions in a easy to use user interface.
@@ -39,6 +41,8 @@ The data cleaning process consisted of five main steps:
 4. Condense and aggregate nested features (list of previous payouts and dicts of ticket information).
 5. Convert html features into plain text using the Beautiful Soup library.
 
+<br/>
+
 # Data Analysis (EDA)
 
 ## Number of Missing Values
@@ -46,6 +50,42 @@ The data cleaning process consisted of five main steps:
 Exploration of the data showed that multiple features had different common values for fraudulent events than non-fraudulent events. One interesting marker of a fraudulent events is that the user that created the event provided less information about it. As you can see below fraudulent events are more likely to have more missing information.
 
 ![Number of Missing Values](images/total_empty_values_comparison.png)
+
+## Fraud Rate by Country
+
+The location of an event has a lot of predictive value on whether or not the event is fraudulent. I grouped the events by country because it was fairly quick and provided some interesting comparisons between locations.
+
+![Fraud by Country](images/fraud_by_country.png)
+
+### Major Locations
+
+The majority of events take place in just four countries but there is a large difference in the fraud rate between each country. For example the fraud rate in the United Kingdom is over twice that of the US and almost ten times the fraud rate of Australia. An unknown location is one of the best indicators of fraud. 
+
+|Location|Fraud Rate|Total Events|Fraud Count|Non-Fraud Count|
+|:-------|:--------:|:----------:|:---------:|:-------------:|
+|Overall|**9.1%**|11469|1040|10429|
+|United States|**5.7%**|6706|383|1066|
+|United Kingdom|**11.9%**|1536|183|1353|
+|Canada|**2.2%**|916|20|896|
+|Australia|**1.3%**|550|7|543|
+|Rest of the World|**18.3%**|453|83|370|
+|Unknown Location|**25.5%**|1430|364|1066|
+
+### Minor Locations
+
+Outside of the major countries there is a lot of interesting variablity in fraud rates. While the overall fraud rate is high in the countries with less events, the rate can vary dramaticaly from country to country as is shown below. This variablity is useful for creating a model that can predict fraud.
+
+|Location|Fraud Rate|Total Events|Fraud Count|Non-Fraud Count|
+|:-------|:--------:|:----------:|:---------:|:-------------:|
+|Overall|**9.1%**|11469|1040|10429|
+|**Low Fraud Countries**|||||
+|New Zealand|**0%**|47|0|47|
+|Ireland|**0%**|39|0|39|
+|**High Fraud Countries**|||||
+|Morocco|**100%**|15|15|0|
+|Philippines|**100%**|11|11|0|
+
+<br/>
 
 # NLP Feature Engineering
 
@@ -67,6 +107,8 @@ As you can see from the below examples, there are some interesting differences b
 ### Event Description
 
 ![Event Description Wordclouds](images/description_wordclouds.png)
+
+<br/>
 
 # Machine Learning
 
