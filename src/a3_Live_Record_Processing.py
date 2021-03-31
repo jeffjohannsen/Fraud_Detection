@@ -290,6 +290,13 @@ class EventRecordManager:
             rds_endpoint (str): Database location. Shown on AWS RDS console.
             rds_password (str): Database password.
         """
+        self.model_dict = {
+            "nlp_model_description": "nlp_description_text_clf_pipeline",
+            "nlp_model_name": "nlp_name_text_clf_pipeline",
+            "nlp_model_org_desc": "nlp_org_desc_text_clf_pipeline",
+            "nlp_model_org_name": "nlp_org_name_text_clf_pipeline",
+            "final_model": "forest_clf",
+        }
         self.already_predicted = set()
         self.final_model = None
         self.nlp_model_description = None
