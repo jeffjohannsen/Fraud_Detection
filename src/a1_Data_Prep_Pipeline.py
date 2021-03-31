@@ -230,7 +230,9 @@ def run_data_prep_pipeline(original_df):
 
     df = aggregate_nested_features(df)
     df = convert_categorical_features(df)
-    df["total_empty_values"] = df.applymap(lambda x: x in [0, -1]).sum(axis=1)
+    df["total_empty_values"] = df.applymap(
+        lambda x: x in ["Unknown", -1, 0]
+    ).sum(axis=1)
     df = convert_html_to_text(df, ["description", "org_desc"])
     df = remove_features(df)
     return df
