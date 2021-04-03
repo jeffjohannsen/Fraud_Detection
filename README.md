@@ -155,3 +155,11 @@ The Baseline is created from predicting the majority class (non-fraudulent) for 
 Below is a comparison of the best results for the tested models.
 
 ![Model Comparison Curves](images/model_comparison_curves.png)
+
+# Production and Deployment
+
+The below dashboard is a MVP placeholder for an in progress web app and more advanced dashboard.
+
+[Link to live version on Google Data Studio](https://datastudio.google.com/reporting/1e1a7bc5-9de7-4f7e-9602-3518450e616d)
+
+![Dashboard](images/fd_dashboard.png)

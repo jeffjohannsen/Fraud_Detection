@@ -24,7 +24,6 @@ class EventRecord:
         self.record_predicted_datetime = None
         self.original_record = None
         self.processed_record = None
-        self.record_summary = None
         self.nlp_predictions = {
             "name": None,
             "description": None,
@@ -222,24 +221,6 @@ class EventRecord:
             "record_predicted_datetime"
         ] = self.record_predicted_datetime
 
-    def create_record_summary(self):
-        summary_features = [
-            "object_id",
-            "fraud_proba",
-            "record_predicted_datetime",
-            "event_created",
-            "venue_latitude",
-            "venue_longitude",
-            "num_tickets_available",
-            "avg_ticket_cost",
-            "total_ticket_value",
-            "name_proba",
-            "description_proba",
-            "org_name_proba",
-            "org_desc_proba",
-        ]
-        self.record_summary = self.processed_record[summary_features]
-
     def save_record(self, table_name):
         with manager.rds_engine.connect() as connection:
             temp = pd.DataFrame(self.processed_record).T
@@ -252,16 +233,6 @@ class EventRecord:
                     "previous_payouts": postgresql.JSONB,
                     "ticket_types": postgresql.JSONB,
                 },
-            )
-
-    def save_record_summary(self, table_name):
-        with manager.rds_engine.connect() as connection:
-            temp = pd.DataFrame(self.record_summary).T
-            temp.to_sql(
-                name=table_name,
-                con=connection,
-                if_exists="append",
-                index=False,
             )
 
 
@@ -397,9 +368,7 @@ class EventRecordManager:
                     }
                 )
                 record.predict_record(self.final_model)
-                record.create_record_summary()
                 record.save_record("fraud_records_1")
-                record.save_record_summary("fraud_record_summaries_1")
                 self.records_predicted_and_saved += 1
                 if print_results:
                     r_id = record.record_id
@@ -431,4 +400,4 @@ if __name__ == "__main__":
         rds_password=fraud_detection_db_1_password,
     )
 
-    manager.process_records(100, 2)
+    manager.process_records(10000, 2)
