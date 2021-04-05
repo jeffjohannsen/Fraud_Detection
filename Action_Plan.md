@@ -6,35 +6,110 @@
     * [Central Questions](#Central-Questions)
     * [Methods and Concepts](#Methods-and-Concepts)
     * [Tech Used](#Tech-Used)
-* [Data Acquisition](#Data-Acquisition)
-* [Data Storage](#Data-Storage)
-* [Data Cleaning and Processing](#Data-Cleaning-and-Processing)
-* [Feature Engineering](#Feature-Engineering)
-* [Analysis and Visualization](#Analysis-and-Visualization)
-* [NLP](#NLP)
-* [Machine Learning](#Machine-Learning)
-* [Deployment and Production](#Deployment-and-Production)
+* [Current Focus](#Current-Focus)
+* [Next Steps and Notes](#Next-Steps-and-Notes)
+    * [Data Acquisition](#Data-Acquisition)
+    * [Data Storage](#Data-Storage)
+    * [Data Cleaning and Processing](#Data-Cleaning-and-Processing)
+    * [Feature Engineering](#Feature-Engineering)
+    * [Analysis and Visualization](#Analysis-and-Visualization)
+    * [NLP](#NLP)
+    * [Machine Learning](#Machine-Learning)
+    * [Deployment and Production](#Deployment-and-Production)
 
 # Project Goals
 
+### Main Goal
+
+The main goal of this project is to predict the likelihood of event data being fraud in order to flag potential fraudulent records for further investigation. This will improve the user experience and decrease the risk to the company of being responsible for fraudulent events that were purchased by users.
+
+### Secondary Goals
+
+* Present a full data lifecyle project from acquiring live streaming data thru to displaying realtime results in a dashboard/web app.
+* Create an intuitive and functional UX/UI for fraud investigations personal to utilize.
+
 ## Central Questions
+
+* How well can fraud be predicted in this situation?
+* Which features are the most useful? Text or Other?
+* Which model type performs the best in this situation?
 
 ## Methods and Concepts
 
+Data Analysis
+Machine Learning - Logistic Regression, Random Forest
+Model Interpretation
+Natural Language Processing
+Dashboards
+Web-Apps
+
 ## Tech Used
 
-# Data Acquisition
+Code
+* Python
+    * Data Analysis - Pandas, Dataprep.eda, Geopandas, Wordcloud, geoplot, shapely
+    * Visualization - Matplotlib, Seaborn, Folium
+    * Machine Learning - Sklearn, SHAP, eli5
+    * Other - Numpy, Beautiful Soup, Flask, Plotly-Dash, Pickle
+* SQL - Postgres, SQLAlchemy, psql
+Other
+* Google Data Studio
+* AWS RDS
+* Git/Github
 
-# Data Storage
+# Current Focus
 
-# Data Cleaning and Processing
+1. Move Dashboard into Tableau
+2. Build out other Flask app pages
+3. NLP feature engineering especially with Spacy
 
-# Feature Engineering
+# Next Steps and Notes
 
-# Analysis and Visualization
+## Data Acquisition
 
-# NLP
+* Work on failsafes for server request failures.
+* Try to determine server requests limits if any. 
 
-# Machine Learning
+## Data Storage
 
-# Deployment and Production
+* Work plan for saving RDS to S3 during extended downtimes.
+* SQL work for connecting DB to Dashboard and creating further metrics.
+
+## Data Cleaning and Processing
+
+* Mostly done. Clean up code.
+
+## Feature Engineering
+
+* Do another iteration but the focus here is more on text/NLP work.
+
+## Analysis and Visualization
+
+* Mostly done.
+* Focus on dashboard and web app for further visuals.
+
+## NLP
+
+* Hopefully turn model into a fully text based feature set.
+* Spacy linguistic concepts vectorized and evaluated. Dig Deeper here.
+* Deep Learning
+
+## Machine Learning
+
+* Tune Logistic Regression and Random Forest more fully. Consider entire pipeline impacts.
+* Try new models for comparison - XGBoost with Hyperparameter tuning
+* Deep Learning for both main model and advanced NLP work.
+
+## Deployment and Production
+
+* Improve Dashboard
+    * Stage 1 - Tableau based
+    * Stage 2 - Plotly/Dash final product
+    * Add dashboard to Flask app
+* Flask App
+    * Score endpoint for internal user requests
+    * Page 1 - Fraud investigation console organizing events and highlighting those with high likelihood of fraud
+    * Page 2 - Event data analytics dashboard
+    * Page 3 - Predict fraud by text interface for external user requests
+* Push code to AWS and link RDS - Fully run in the cloud
+* Rework data flow to be responsive to new datapoints when they occur. Minimize amount of pipeline that needs to be constantly online.
