@@ -254,5 +254,7 @@ def save_df_to_json(df, filename):
 if __name__ == "__main__":
     original_working_data = load_fraud_data("working_data")
     model_ready_data = run_data_prep_pipeline(original_working_data)
+    print("test")
+    exit()
     # print(model_ready_data.info())
     save_df_to_json(model_ready_data, "model_data_v1")

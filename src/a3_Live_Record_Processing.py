@@ -400,4 +400,6 @@ if __name__ == "__main__":
         rds_password=fraud_detection_db_1_password,
     )
 
-    manager.process_records(10000, 2)
+    print(manager)
+
+    # manager.process_records(10000, 2)
