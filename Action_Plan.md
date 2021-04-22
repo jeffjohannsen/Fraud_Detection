@@ -50,18 +50,20 @@ Code
     * Data Analysis - Pandas, Dataprep.eda, Geopandas, Wordcloud, geoplot, shapely
     * Visualization - Matplotlib, Seaborn, Folium
     * Machine Learning - Sklearn, SHAP, eli5
-    * Other - Numpy, Beautiful Soup, Flask, Plotly-Dash, Pickle
+    * Other - Numpy, Beautiful Soup, Flask, Bootstrap, Plotly-Dash, Pickle
 * SQL - Postgres, SQLAlchemy, psql
 Other
 * Google Data Studio
-* AWS RDS
+* AWS RDS, S3
 * Git/Github
 
 # Current Focus
 
-1. Move Dashboard into Tableau
-2. Build out other Flask app pages
-3. NLP feature engineering especially with Spacy
+1. Web App - Display results from RDS
+2. Web App - Score Endpoint
+3. Web App - Add Google Data Studio metrics dashboard
+4. Deploy everything on AWS
+5. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
 
 # Next Steps and Notes
 
@@ -103,13 +105,10 @@ Other
 ## Deployment and Production
 
 * Improve Dashboard
-    * Stage 1 - Tableau based
-    * Stage 2 - Plotly/Dash final product
-    * Add dashboard to Flask app
+    * Plotly/Dash
 * Flask App
     * Score endpoint for internal user requests
     * Page 1 - Fraud investigation console organizing events and highlighting those with high likelihood of fraud
     * Page 2 - Event data analytics dashboard
-    * Page 3 - Predict fraud by text interface for external user requests
 * Push code to AWS and link RDS - Fully run in the cloud
 * Rework data flow to be responsive to new datapoints when they occur. Minimize amount of pipeline that needs to be constantly online.
