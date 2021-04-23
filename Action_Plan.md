@@ -60,8 +60,6 @@ Other
 # Current Focus
 
 1. Web App - Display results from RDS
-2. Web App - Score Endpoint
-3. Web App - Add Google Data Studio metrics dashboard
 4. Deploy everything on AWS
 5. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
 

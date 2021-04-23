@@ -32,6 +32,16 @@ class EventRecord:
         }
         self.final_prediction = None
 
+    def load_record_from_json(self, record_json):
+        self.record_id = record_json["object_id"]
+        self.original_record = record_json
+        self.record_predicted_datetime = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+        self.record_datetime = datetime.fromtimestamp(
+            record_json["event_created"]
+        ).strftime("%Y/%m/%d %H:%M:%S")
+
     def load_and_verify_record(self, already_predicted, server):
         r = requests.get(server)
         r.raise_for_status()
@@ -221,8 +231,8 @@ class EventRecord:
             "record_predicted_datetime"
         ] = self.record_predicted_datetime
 
-    def save_record(self, table_name):
-        with manager.rds_engine.connect() as connection:
+    def save_record(self, engine, table_name):
+        with engine.connect() as connection:
             temp = pd.DataFrame(self.processed_record).T
             temp.to_sql(
                 name=table_name,
@@ -285,7 +295,11 @@ class EventRecordManager:
     # TODO: Security issues with pickle.
     # TODO: Verify valid model_name.
     # TODO: Verify valid model.
-    def load_model(self, model_name, filename):
+    def load_model(
+        self,
+        model_name,
+        filename,
+    ):
         """
         Add saved model to attributes.
 
@@ -293,7 +307,7 @@ class EventRecordManager:
             model_name (str): attribute name
             filename (str): filename where model is stored.
         """
-        with open(f"../models/{filename}.pkl", "rb") as file:
+        with open(f"../../models/{filename}.pkl", "rb") as file:
             model = pkl.load(file)
             setattr(self, model_name, model)
 
@@ -368,7 +382,7 @@ class EventRecordManager:
                     }
                 )
                 record.predict_record(self.final_model)
-                record.save_record("fraud_records_1")
+                record.save_record(self.rds_engine, "fraud_records_1")
                 self.records_predicted_and_saved += 1
                 if print_results:
                     r_id = record.record_id
@@ -400,6 +414,4 @@ if __name__ == "__main__":
         rds_password=fraud_detection_db_1_password,
     )
 
-    print(manager)
-
-    # manager.process_records(10000, 2)
+    manager.process_records(10000, 2)
