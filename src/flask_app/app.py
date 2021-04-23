@@ -14,7 +14,25 @@ from confidential import (
 
 # Function for queries to RDS database.
 def query_records_table():
-    record_count_query = "SELECT COUNT(1) FROM fraud_records_1"
+    record_count_query = """
+                            SELECT COUNT(1)
+                            FROM fraud_records_1
+                         """
+    high_count_query = """
+                        SELECT COUNT(1)
+                        FROM fraud_records_1
+                        WHERE fraud_proba >= 0.5
+                       """
+    med_count_query = """
+                        SELECT COUNT(1)
+                        FROM fraud_records_1
+                        WHERE fraud_proba >= 0.1 AND fraud_proba < 0.5
+                      """
+    low_count_query = """
+                        SELECT COUNT(1)
+                        FROM fraud_records_1
+                        WHERE fraud_proba < 0.1
+                      """
     records_query = """
                     SELECT object_id,
                         event_created,
@@ -33,9 +51,26 @@ def query_records_table():
     record_count = 0
     records = None
     with manager.rds_engine.connect() as connection:
-        record_count = [x[0] for x in connection.execute(record_count_query)]
+        record_count = [x[0] for x in connection.execute(record_count_query)][
+            0
+        ]
+        high_count = [x[0] for x in connection.execute(high_count_query)][0]
+        med_count = [x[0] for x in connection.execute(med_count_query)][0]
+        low_count = [x[0] for x in connection.execute(low_count_query)][0]
+        high_perc = round((high_count / record_count) * 100, 1)
+        med_perc = round((med_count / record_count) * 100, 1)
+        low_perc = round((low_count / record_count) * 100, 1)
         records = connection.execute(records_query).fetchall()
-    return record_count[0], records
+    return {
+        "record_count": record_count,
+        "high_count": high_count,
+        "med_count": med_count,
+        "low_count": low_count,
+        "high_perc": high_perc,
+        "med_perc": med_perc,
+        "low_perc": low_perc,
+        "records": records,
+    }
 
 
 # Flask App Setup
@@ -44,9 +79,9 @@ APP = flask.Flask(__name__)
 
 @APP.route("/")
 def home():
-    rc, recs = query_records_table()
-    # return flask.render_template("home.html")
-    return f"Total Records: {rc}  ----------------->  {recs}"
+    data = query_records_table()
+    return flask.render_template("home.html", **data)
+    # return f"Total Records: {rc}  ----------------->  {recs}"
 
 
 @APP.route("/dashboard")
