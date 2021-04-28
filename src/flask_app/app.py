@@ -37,8 +37,8 @@ def query_records_table():
                     SELECT object_id,
                         event_created,
                         country,
-                        avg_ticket_cost,
-                        total_ticket_value,
+                        CAST(avg_ticket_cost AS MONEY),
+                        CAST(total_ticket_value AS MONEY),
                         fraud_proba,
                         CASE
                             WHEN fraud_proba >= 0.5 THEN 'High'
@@ -81,7 +81,6 @@ APP = flask.Flask(__name__)
 def home():
     data = query_records_table()
     return flask.render_template("home.html", **data)
-    # return f"Total Records: {rc}  ----------------->  {recs}"
 
 
 @APP.route("/dashboard")

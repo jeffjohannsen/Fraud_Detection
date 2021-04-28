@@ -8,28 +8,6 @@
     <title>Fraud Detection App</title>
 
 
-    <!-- Bootstrap core CSS -->
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
-
-
-    <!-- Custom styles for this template -->
-    <link href="../static/css/starter-template.css" rel="stylesheet">
 
     <!-- Navigation Bar-->
     <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
@@ -61,36 +39,104 @@
     <h1 class="fraud_risk"> Total Records: {{ record_count }}</h1>
     <h1 class="fraud_risk"> Fraud Risk </h1>
     <div class="fraud_risk">
-        <h1 style="background-color:#c8e6c9;">Low: {{ low_count }} - {{low_perc}}%
+        <h1 style="background-color:#c8e6c9;">Low: {{low_count}} - {{low_perc}}%
         </h1>
         <h1 style="background-color:#ffecb3;">Medium: {{med_count}} - {{med_perc}}%</h1>
         <h1 style="background-color:#f4c7c3;">High: {{high_count}} - {{high_perc}}%</h1>
     </div>
 
-    <style>
-        .fraud_risk {
-            text-align: center;
-        }
-
-        .fraud_risk h1 {
-            display: inline-block;
-            border-radius: 6px;
-            padding: 4px;
-            margin-left: 4px;
-            margin-right: 4px;
-        }
-    </style>
-
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" class="cell-center">Record ID</th>
+                <th scope="col" class="cell-center">Creation Date/Time</th>
+                <th scope="col" class="cell-center">Country</th>
+                <th scope="col" class="cell-center">Average Ticket Cost</th>
+                <th scope="col" class="cell-center">Total Ticket Value</th>
+                <th scope="col" class="cell-center">Fraud Probability</th>
+                <th scope="col" class="cell-center">Fraud Risk Level</th>
+                <th scope="col" class="cell-center">Record Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in records %}
+            <tr>
+                <td class="cell-center">{{rec[0]}}</td>
+                <td class="cell-center">{{rec[1]}}</td>
+                <td class="cell-center">{{rec[2]}}</td>
+                <td class="cell-right">{{rec[3]}}</td>
+                <td class="cell-right">{{rec[4]}}</td>
+                <td class="cell-center">{{rec[5]}}</td>
+                <td class="cell-center">{{rec[6]}}</td>
+                <td class="cell-center">
+                    <div class="btn-group" role="group">
+                        <input type="checkbox" class="btn-check" id="{{loop.index0}}b" autocomplete="off">
+                        <label class="btn btn-outline-success" for="{{loop.index0}}b">Verified</label>
+                        <input type="checkbox" class="btn-check" id="{{loop.index0}}c" autocomplete="off">
+                        <label class="btn btn-outline-danger" for="{{loop.index0}}c">Flagged</label>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <footer class="pt-5 my-5 text-muted border-top">
         Jeff Johannsen &middot; &copy; 2021
     </footer>
     </div>
 
-
     <script src="../static/js/bootstrap.bundle.min.js"></script>
-
 
 </body>
 
 </html>
+
+<!-- Bootstrap core CSS -->
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../static/css/starter-template.css" rel="stylesheet">
+
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+
+    .fraud_risk {
+        text-align: center;
+    }
+
+    .fraud_risk h1 {
+        display: inline-block;
+        border-radius: 6px;
+        padding: 4px;
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    table {
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: large;
+    }
+
+    .cell-right {
+        text-align: right;
+    }
+
+    .cell-center {
+        text-align: center;
+    }
+</style>
