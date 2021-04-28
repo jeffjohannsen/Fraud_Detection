@@ -59,9 +59,9 @@ Other
 
 # Current Focus
 
-1. Web App - Display results from RDS
-4. Deploy everything on AWS
-5. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
+1. Clean up project
+2. Deploy everything on AWS and test
+3. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
 
 # Next Steps and Notes
 

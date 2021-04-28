@@ -10,6 +10,7 @@
 * [Machine Learning](#Machine-Learning)
     * [Model Setup](#Model-Setup)
     * [Model Selection and Results](#Model-Selection-and-Results)
+* [Production and Deployment](#Production-and-Deployment)
 
 <br/>
 
@@ -158,8 +159,12 @@ Below is a comparison of the best results for the tested models.
 
 # Production and Deployment
 
-The below dashboard is a MVP placeholder for an in progress web app and more advanced dashboard.
+Flask web app to allow users to analyze and interact with fraud records and prediction results.
 
-[Link to live version on Google Data Studio](https://datastudio.google.com/reporting/1e1a7bc5-9de7-4f7e-9602-3518450e616d)
+[Link to live app on AWS]()
 
-![Dashboard](images/fd_dashboard.png)
+![Flask App](images/flask_app.png)
+
+[Link to live dashboard on Google Data Studio](https://datastudio.google.com/reporting/1e1a7bc5-9de7-4f7e-9602-3518450e616d)
+
+![Dashboard](images/dashboard_on_app.png)
