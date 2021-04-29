@@ -397,41 +397,28 @@ class EventRecordManager:
         self.records_pulled = 0
         self.records_predicted_and_saved = 0
 
-    def process_records_aws(self, iter, sleep, print_results=True):
-        """
-        Pulls record from server and posts JSON to Flask App /score endpoint
-        which runs the processing pipeline.
 
-        Pulls records from server, processes, predicts, and saves to AWS RDS.
+def process_records_aws(iter, sleep, server):
+    """
+    Pulls record from server and posts JSON to Flask App /score endpoint
+    which runs the processing pipeline.
 
-        Args:
-            iter (int): Number of records to pull and process.
-            sleep (int): Seconds to wait in between calls to server.
-            print_results (bool, optional): Whether to print results of each record.
-                                            Defaults to True.
-        """
-        for _ in range(iter):
-            server_record = requests.get(server)
-            record_json = server_record.json()
-            aws_url = "ec2-34-223-178-205.us-west-2.compute.amazonaws.com"
-            requests.post(aws_url, json=record_json)
-            time.sleep(sleep)
+    Pulls records from server, processes, predicts, and saves to AWS RDS.
+
+    Args:
+        iter (int): Number of records to pull and process.
+        sleep (int): Seconds to wait in between calls to server.
+    """
+    for _ in range(iter):
+        server_record = requests.get(server)
+        record_json = server_record.json()
+        aws_url = (
+            "http://ec2-34-223-178-205.us-west-2.compute.amazonaws.com/score"
+        )
+        x = requests.post(aws_url, json=record_json)
+        print(x.text)
+        time.sleep(sleep)
 
 
 if __name__ == "__main__":
-    model_dict = {
-        "nlp_model_description": "nlp_description_text_clf_pipeline",
-        "nlp_model_name": "nlp_name_text_clf_pipeline",
-        "nlp_model_org_desc": "nlp_org_desc_text_clf_pipeline",
-        "nlp_model_org_name": "nlp_org_name_text_clf_pipeline",
-        "final_model": "forest_clf",
-    }
-
-    manager = EventRecordManager(
-        server=server,
-        model_dict=model_dict,
-        rds_endpoint=fraud_detection_db_1_endpoint,
-        rds_password=fraud_detection_db_1_password,
-    )
-
-    manager.process_records_aws(10, 2)
+    process_records_aws(10, 2, server=server)

@@ -161,7 +161,7 @@ Below is a comparison of the best results for the tested models.
 
 Flask web app to allow users to analyze and interact with fraud records and prediction results.
 
-[Link to live app on AWS](ec2-34-223-178-205.us-west-2.compute.amazonaws.com)
+[Link to live app on AWS](http://ec2-34-223-178-205.us-west-2.compute.amazonaws.com/)
 
 ![Flask App](images/flask_app.png)
 
