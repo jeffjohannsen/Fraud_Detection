@@ -128,5 +128,5 @@ if __name__ == "__main__":
         rds_endpoint=fraud_detection_db_1_endpoint,
         rds_password=fraud_detection_db_1_password,
     )
-    APP.debug = True
-    APP.run()
+    APP.debug = False
+    APP.run(host="0.0.0.0", port=8000)

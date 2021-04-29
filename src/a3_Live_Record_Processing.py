@@ -347,7 +347,7 @@ class EventRecordManager:
             f"postgresql+psycopg2://postgres:{password}@{endpoint}/fraud_detection_db_1"
         )
 
-    def process_records(self, iter, sleep, print_results=True):
+    def process_records_local(self, iter, sleep, print_results=True):
         """
         Runs the record processing pipeline for specified iterations.
         Pulls records from server, processes, predicts, and saves to AWS RDS.
@@ -397,6 +397,26 @@ class EventRecordManager:
         self.records_pulled = 0
         self.records_predicted_and_saved = 0
 
+    def process_records_aws(self, iter, sleep, print_results=True):
+        """
+        Pulls record from server and posts JSON to Flask App /score endpoint
+        which runs the processing pipeline.
+
+        Pulls records from server, processes, predicts, and saves to AWS RDS.
+
+        Args:
+            iter (int): Number of records to pull and process.
+            sleep (int): Seconds to wait in between calls to server.
+            print_results (bool, optional): Whether to print results of each record.
+                                            Defaults to True.
+        """
+        for _ in range(iter):
+            server_record = requests.get(server)
+            record_json = server_record.json()
+            aws_url = "ec2-34-223-178-205.us-west-2.compute.amazonaws.com"
+            requests.post(aws_url, json=record_json)
+            time.sleep(sleep)
+
 
 if __name__ == "__main__":
     model_dict = {
@@ -414,4 +434,4 @@ if __name__ == "__main__":
         rds_password=fraud_detection_db_1_password,
     )
 
-    manager.process_records(10000, 2)
+    manager.process_records_aws(10, 2)
