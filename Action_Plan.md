@@ -59,9 +59,7 @@ Other
 
 # Current Focus
 
-1. Clean up project
-2. Deploy everything on AWS and test
-3. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
+1. Phase 2 - 2nd iteration from start to finish. Simplify, Clean, Test, Document
 
 # Next Steps and Notes
 
@@ -104,9 +102,4 @@ Other
 
 * Improve Dashboard
     * Plotly/Dash
-* Flask App
-    * Score endpoint for internal user requests
-    * Page 1 - Fraud investigation console organizing events and highlighting those with high likelihood of fraud
-    * Page 2 - Event data analytics dashboard
-* Push code to AWS and link RDS - Fully run in the cloud
-* Rework data flow to be responsive to new datapoints when they occur. Minimize amount of pipeline that needs to be constantly online.
+* Run new record processing in the cloud.
