@@ -1,5 +1,4 @@
-# Fraud Detection
-# Project Outline and Action Plan
+# Fraud Detection - Project Outline and Action Plan
 
 ## Table of Contents
 * [Project Goals](#Project-Goals)
