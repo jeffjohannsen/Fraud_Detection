@@ -421,4 +421,4 @@ def process_records_aws(iter, sleep, server):
 
 
 if __name__ == "__main__":
-    process_records_aws(10, 2, server=server)
+    process_records_aws(1000, 2, server=server)
