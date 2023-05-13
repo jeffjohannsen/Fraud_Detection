@@ -1,4 +1,4 @@
-![Header Image - Fraud](images/fraud_header.png)
+![Header Image - Fraud](images/fraud_header_2.png)
 
 # Fraud Detection
 
