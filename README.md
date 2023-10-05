@@ -161,10 +161,6 @@ Below is a comparison of the best results for the tested models.
 
 Flask web app to allow users to analyze and interact with fraud records and prediction results.
 
-[Link to live app on AWS](http://ec2-34-223-178-205.us-west-2.compute.amazonaws.com/)
-
 ![Flask App](images/flask_app.png)
-
-[Link to live dashboard on Google Data Studio](https://datastudio.google.com/reporting/1e1a7bc5-9de7-4f7e-9602-3518450e616d)
 
 ![Dashboard](images/dashboard_on_app.png)
