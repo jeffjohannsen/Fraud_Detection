@@ -11,6 +11,7 @@
     * [Model Setup](#Model-Setup)
     * [Model Selection and Results](#Model-Selection-and-Results)
 * [Production and Deployment](#Production-and-Deployment)
+* [Setup and Usage](#Setup-and-Usage)
 
 <br/>
 
@@ -22,7 +23,7 @@ Fraud is a major concern for any company. The goal of this project is to create 
 
 The data provided by the company was reasonably complete, although complex. This data contained a mix of categorical and numerical data in varied formats including html, datetime objects, lists of dictionaries, along with normal text and numerical values.
 
-The first step on our exploration was to split the data into fraudulent and not fraudulent transactions. The acct_type feature provided was condensed to give us a fraudulent record count of 1033 and a non-fraudulent record count of 10436 in our training data.
+The first step on our exploration was to split the data into fraudulent and not fraudulent transactions. The acct_type feature provided was condensed to give us a fraudulent record count of 1,293 and a non-fraudulent record count of 13,044 across the full dataset (14,337 total records, ~9% fraud rate).
 
 # Data Processing
 
@@ -119,11 +120,23 @@ In order to ensure that the modeling process provided accurate and relavent resu
 
 ### Metric Selection
 
-The current estimate is that only 10% of events are fraudulent. This creates a situation where it is fairly easy to get a high accuracy (>90%) but this does not necessarily mean that the system is successful. The main goal is to detect as many of the fraudulent events (true positives) as possible. With this in mind, recall is the metric that will be the main focus, though other metrics (Accuracy, Precision, F1-Score) will not be completely ignored. 
+The dataset has approximately 9% fraud rate across all records (9.6% in training data, 4.4% in test data). This creates a situation where it is fairly easy to get a high accuracy (>90%) by simply predicting all events as non-fraudulent, but this does not mean the system is successful. The main goal is to **detect as many of the fraudulent events (true positives) as possible**. With this in mind, **recall** is the metric that will be the main focus, though other metrics (Accuracy, Precision, F1-Score) will not be completely ignored.
+
+**Threshold Optimization:** The production system uses a **dual-threshold approach** to maximize fraud detection:
+- **High risk**: Fraud probability ≥ 0.10
+- **Medium risk**: Fraud probability ≥ 0.03 and < 0.10
+- Both High and Medium risk events are flagged for review
+
+This creates an **effective threshold of 0.03**, catching **92.9% of fraudulent events** with 25.7% precision and 12.4% false positive rate. The system prioritizes the business goal of detecting nearly all fraud over minimizing false alarms - flagged events undergo manual review before action is taken. 
 
 ### Data Integrity
 
-Multiple steps were taken to ensure that there is no data leakage throughout the system. A cross validation system was used for model tuning with the main working dataset. A separate dataset was used for testing. A third holdout dataset is also available for further testing to ensure data integrity. Each of these datasets were created using random sampling from the original data before any processing was completed.
+Multiple steps were taken to ensure that there is no data leakage throughout the system. The original dataset (14,337 records) was split chronologically into three sets:
+- **Train set** (60%, 8,602 records): 2007-mid 2013 data for model training
+- **Test set** (20%, 2,867 records): Mid-2013 data for validation 
+- **Simulate set** (20%, 2,868 records): Late-2013 data for webapp demonstration
+
+This chronological split ensures the model is tested on future data it hasn't seen, mimicking real-world deployment where the model predicts future fraud events. A cross validation system was used for model tuning with the training dataset.
 
 ### Model Tuning
 
@@ -146,10 +159,15 @@ The Baseline is created from predicting the majority class (non-fraudulent) for 
 
 ### Random Forest Classifier
 
-**Overall Model Accuracy: 96%**  
-**Fraud Specific Recall: 59%**
+**Overall Model Accuracy: 95.9%**  
+**Fraud Specific Recall: 92.9%** (dual-threshold approach)  
+**Fraud Specific Precision: 25.7%**  
+**F1-Score: 0.403**  
+**False Positive Rate: 12.4%**
 
-![Logistic Regression Metrics](images/forest_metrics.png)
+The Random Forest model uses a **dual-threshold system** to maximize fraud detection in alignment with the primary business goal. Events with fraud probability ≥0.10 are marked "High risk" and events ≥0.03 are marked "Medium risk" - both categories are flagged for review. This approach catches **92.9% of all fraudulent events** (118 out of 127), missing only 9. The 12.4% false positive rate (1 in 8 legitimate events flagged) is an acceptable tradeoff given that flagged events undergo manual review before action is taken.
+
+![Random Forest Metrics](images/forest_metrics.png)
 
 ## Model Comparisons
 
@@ -159,8 +177,95 @@ Below is a comparison of the best results for the tested models.
 
 # Production and Deployment
 
-Flask web app to allow users to analyze and interact with fraud records and prediction results.
+Flask web app to analyze and interact with fraud records and prediction results.
 
 ![Flask App](images/flask_app.png)
 
 ![Dashboard](images/dashboard_on_app.png)
+
+---
+
+## Setup and Usage
+
+### Prerequisites
+- Python 3.9+
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/jeffjohannsen/Fraud_Detection.git
+cd Fraud_Detection
+
+# Download the full dataset from Releases (optional - required for retraining)
+# Go to https://github.com/jeffjohannsen/Fraud_Detection/releases
+# Download data.json (239 MB) and place in data/raw/
+# Download train_data.json (164 MB) and test_data.json (44 MB) and place in data/processed/
+# Note: simulate_data.json is included in the repo for webapp demo
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Initialize database with historical records
+python src/database/init.py
+```
+
+### Running the Application
+
+```bash
+# From project root
+python run_app.py
+```
+
+Access the app at http://127.0.0.1:5000
+
+### Available Endpoints
+- `/` - Home page with recent predictions
+- `/simulate` - Simulate fraud detection on random events
+- `/score` - API endpoint for scoring events (POST)
+
+### Project Structure
+```
+data/
+├── raw/          # Original datasets
+├── processed/    # Cleaned, feature-engineered data
+├── databases/    # SQLite database (generated)
+└── predictions/  # Model outputs
+
+models/           # Trained ML models (.pkl files)
+
+notebooks/
+├── exploratory_data_analysis.ipynb  # EDA with geographic visualizations
+├── model_development.ipynb          # Model training & comparison
+└── wordcloud_creation.ipynb         # Text feature visualization
+
+src/
+├── data/
+│   ├── preprocessing.py    # Data cleaning and feature engineering
+│   ├── nlp_features.py     # NLP text feature processing
+│   └── holdout.py          # Train/test split utilities
+├── modeling/
+│   └── train.py            # Model retraining script
+├── database/
+│   ├── db.py               # SQLite database adapter
+│   └── init.py             # Database initialization
+├── scoring/
+│   └── predict.py          # Real-time event scoring
+└── webapp/
+    ├── app.py              # Flask web application
+    ├── static/             # CSS, JS, images
+    └── templates/          # HTML templates
+```
+
+### Retraining Models
+
+```bash
+python src/modeling/train.py
+```
+
+This will retrain all 5 models (4 NLP pipelines + Random Forest) using current scikit-learn version.
