@@ -31,3 +31,7 @@ ENV/
 
 # macOS
 .DS_Store
+
+# Claude Code - exclude local settings but keep CLAUDE.md
+.claude/*
+!.claude/CLAUDE.md
